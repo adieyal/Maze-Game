@@ -213,39 +213,34 @@ Position.prototype = {
 
 var Controller = function(maze) {
     var self = this;
+    var map = {};
     self.maze = maze;
-    d3.select("body")
-        .on("keydown", function() {
-            var player1 = self.maze.players[0]
-            var player2 = self.maze.players[1]
-            console.log(d3.event.keyCode);
-            switch (d3.event.keyCode) {
-                case 38:
-                    self.maze.movePlayer(player1, player1.pos.up());
-                    break;
-                case 40:
-                    self.maze.movePlayer(player1, player1.pos.down());
-                    break;
-                case 37:
-                    self.maze.movePlayer(player1, player1.pos.left());
-                    break;
-                case 39:
-                    self.maze.movePlayer(player1, player1.pos.right());
-                    break;
-                case 65:
-                    self.maze.movePlayer(player2, player2.pos.left());
-                    break;
-                case 87:
-                    self.maze.movePlayer(player2, player2.pos.up());
-                    break;
-                case 68:
-                    self.maze.movePlayer(player2, player2.pos.right());
-                    break;
-                case 83:
-                    self.maze.movePlayer(player2, player2.pos.down());
-                    break;
-            }
-        })
+
+    onkeydown = onkeyup = function(e) {
+
+        var player1 = self.maze.players[0]
+        var player2 = self.maze.players[1]
+
+        e = e || event; // to deal with IE
+        map[e.key.toLowerCase()] = e.type == 'keydown';
+
+        if (map["arrowup"])
+            self.maze.movePlayer(player1, player1.pos.up());
+        if (map["arrowdown"])
+            self.maze.movePlayer(player1, player1.pos.down());
+        if (map["arrowleft"])
+            self.maze.movePlayer(player1, player1.pos.left());
+        if (map["arrowright"])
+            self.maze.movePlayer(player1, player1.pos.right());
+        if (map["a"])
+            self.maze.movePlayer(player2, player2.pos.left());
+        if (map["w"])
+            self.maze.movePlayer(player2, player2.pos.up());
+        if (map["d"])
+            self.maze.movePlayer(player2, player2.pos.right());
+        if (map["s"])
+            self.maze.movePlayer(player2, player2.pos.down());
+    }
 }
 
 d3.json("maze2.json").then(function(data) {
