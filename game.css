@@ -1,0 +1,50 @@
+#container {
+}
+
+.cell {
+    width: 10px;
+    height: 10px;
+    float: left;
+    /*position: absolute;*/
+}
+
+.ghost {
+}
+
+#scores {
+    font-size: 5em;
+    font-family: sans-serif;;
+}
+
+.row {
+    overflow: hidden;
+}
+
+.wall {
+    background-color: black;
+}
+
+.prize {
+    background-color: lightgreen;;
+}
+
+.player1 {
+    background-color: red !important;
+}
+
+.player2 {
+    background-color: green !important;
+}
+
+.start {
+    background-color: blue;
+}
+
+.blank {
+    background-color: white;
+}
+
+.end {
+    background-color: green;
+}
+
