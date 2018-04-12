@@ -6,14 +6,14 @@ function Input(el){
     function ev_kdown(ev)
     {
         map[ev.key] = true;
-        ev.preventDefault();
+        //ev.preventDefault();
         return;
     }
 
     function ev_kup(ev)
     {
         map[ev.key] = false;
-        ev.preventDefault();
+        //ev.preventDefault();
         return;
     }
 
@@ -53,7 +53,7 @@ function Input(el){
     {
         var keylist = Array.from(arguments).splice(2);
 
-        intervals[name] = setInterval(watch_loop(keylist, callback), 1000/24);
+        intervals[name] = setInterval(watch_loop(keylist, callback), 1000/48);
         return this;
     }
 
