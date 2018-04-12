@@ -53,7 +53,7 @@ function Input(el){
     {
         var keylist = Array.from(arguments).splice(2);
 
-        intervals[name] = setInterval(watch_loop(keylist, callback), 1000/48);
+        intervals[name] = setInterval(watch_loop(keylist, callback), 1000/10);
         return this;
     }
 
