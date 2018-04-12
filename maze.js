@@ -213,33 +213,38 @@ Position.prototype = {
 
 var Controller = function(maze) {
     var self = this;
-    var map = {};
-    self.maze = maze;
+    this.input = Input(document.getElementsByTagName("body")[0])
+    this.maze = maze;
+    this.maze.addEventObserver(this);
 
-    onkeydown = onkeyup = function(e) {
+    var move = function(player, direction) {
+        switch (direction) {
+            case "left"  : this.maze.movePlayer(player, player.pos.left()); break;
+            case "right" : this.maze.movePlayer(player, player.pos.right()); break;
+            case "up"    : this.maze.movePlayer(player, player.pos.up()); break;
+            case "down"  : this.maze.movePlayer(player, player.pos.down()); break;
+        }
+    }
+    this.input
+        .watch("arrowup",    function() { move(self.player1, "up") }, "ArrowUp")
+        .watch("arrowdown",  function() { move(self.player1, "down") }, "ArrowDown")
+        .watch("arrowleft",  function() { move(self.player1, "left") }, "ArrowLeft")
+        .watch("arrowright", function() { move(self.player1, "right") }, "ArrowRight")
+        .watch("w",          function() { move(self.player2, "up") }, "w")
+        .watch("s",          function() { move(self.player2, "down") }, "s")
+        .watch("a",          function() { move(self.player2, "left") }, "a")
+        .watch("d",          function() { move(self.player2, "right") }, "d")
+}
 
-        var player1 = self.maze.players[0]
-        var player2 = self.maze.players[1]
+Controller.prototype = {
+    notify : function(data, event_label) {
+        console.log(event_label)
+        if (event_label == "player_added") {
+            this.player1 = this.maze.players[0]
 
-        e = e || event; // to deal with IE
-        map[e.key.toLowerCase()] = e.type == 'keydown';
-
-        if (map["arrowup"])
-            self.maze.movePlayer(player1, player1.pos.up());
-        if (map["arrowdown"])
-            self.maze.movePlayer(player1, player1.pos.down());
-        if (map["arrowleft"])
-            self.maze.movePlayer(player1, player1.pos.left());
-        if (map["arrowright"])
-            self.maze.movePlayer(player1, player1.pos.right());
-        if (map["a"])
-            self.maze.movePlayer(player2, player2.pos.left());
-        if (map["w"])
-            self.maze.movePlayer(player2, player2.pos.up());
-        if (map["d"])
-            self.maze.movePlayer(player2, player2.pos.right());
-        if (map["s"])
-            self.maze.movePlayer(player2, player2.pos.down());
+            if (this.maze.players.length > 1)
+                this.player2 = this.maze.players[1]
+        }
     }
 }
 
