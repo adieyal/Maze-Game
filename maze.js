@@ -79,7 +79,7 @@ Maze.prototype = {
 
     updateScore : function(player, score) {
         player.score += score;
-        this.notifyObservers(player, "player_scored");
+        this.notifyObservers({player:player}, "player_scored");
     },
 
     moveObject : function(object, pos) {
@@ -140,8 +140,6 @@ Maze.prototype = {
             o.notify(data, event_label);
         })
     },
-
-
 
     addEventObserver : function(observer) {
         this.observers.push(observer);
