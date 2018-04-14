@@ -1,9 +1,46 @@
+/*
+var MazeBuilder = function() {
+}
+
+MazeBuilder.WALL = 1;
+MazeBuilder.EMPTY = 0;
+
+MazeBuilder.prototype = {
+    build_maze : function(width, height, complexity, density) {
+        this.Z = this.create_empty_maze(width, height);
+        width = width || 81;
+        height = height || 51;
+        complexity = complexity || 0.75;
+        density = density || 0.75;
+    },
+
+    create_empty_maze = function(width, height) {
+        Z = math.zeros(height, width)
+
+        top_border = Z.subset(math.index(0, math.range(0, width))).map(wall)
+        Z.subset(math.index(0, math.range(0, width)), top_border)
+
+        bottom_border = Z.subset(math.index(height - 1, math.range(0, width))).map(wall)
+        Z.subset(math.index(height - 1, math.range(0, width)), bottom_border)
+
+        left_border = Z.subset(math.index(math.range(0, height), 0)).map(wall)
+        Z.subset(math.index(math.range(0, height), 0), left_border)
+
+        right_border = Z.subset(math.index(math.range(0, height), width - 1)).map(wall)
+        Z.subset(math.index(math.range(0, height), width - 1), right_border)
+
+        return Z;
+    }
+
+}
+*/
+
 var generate_maze = function(width, height, complexity, density) {
     var WALL = 1;
     var EMPTY = 0;
 
     var create_empty_maze = function(width, height) {
-        Z = math.zeros(height, width)
+        var Z = math.zeros(height, width)
 
         top_border = Z.subset(math.index(0, math.range(0, width))).map(wall)
         Z.subset(math.index(0, math.range(0, width)), top_border)
@@ -30,15 +67,13 @@ var generate_maze = function(width, height, complexity, density) {
     height = height || 51;
     complexity = complexity || 0.75;
     density = density || 0.75;
-    complexity = 0.15;
-    density = 0.1;
 
     // only odd shapes
-    shape = [intdiv(height, 2) * 2 + 1, intdiv(width, 2) * 2 + 1]
+    var shape = [intdiv(height, 2) * 2 + 1, intdiv(width, 2) * 2 + 1]
     complexity = Math.floor(complexity * (5 * (shape[0] + shape[1])))
     density = Math.floor(density * intdiv(shape[0], 2) * intdiv(shape[1], 2))
 
-    Z = create_empty_maze(width, height);
+    var Z = create_empty_maze(width, height);
     var set_cell = function(x, y, val) {
         Z.subset(math.index(y, x), val)
     }
@@ -56,13 +91,13 @@ var generate_maze = function(width, height, complexity, density) {
     }
 
     var get_neighbours = function(x, y) {
-        position = {
+        var position = {
             left : function(x, y)  { return [y, x - 2] },
             right : function(x, y) { return [y, x + 2] },
             up : function(x, y)    { return [y - 2, x] },
             down : function(x, y)  { return [y + 2, x] }
         }
-        neighbours = []
+        var neighbours = []
 
         if (x > 1)
             neighbours.push(position.left(x, y))
@@ -77,8 +112,8 @@ var generate_maze = function(width, height, complexity, density) {
     }
 
     for (var i = 0; i < density; i++) {
-        y = _.random(0, intdiv(shape[0], 2)) * 2
-        x = _.random(0, intdiv(shape[1], 2)) * 2
+        var y = _.random(0, intdiv(shape[0], 2)) * 2
+        var x = _.random(0, intdiv(shape[1], 2)) * 2
         set_wall(x, y);
 
         for (var j = 0; j < complexity; j++) {
@@ -86,12 +121,12 @@ var generate_maze = function(width, height, complexity, density) {
 
             if (neighbours.length > 0) {
                 idx =  _.random(0, neighbours.length - 1);
-                y_ =  neighbours[idx][0];
-                x_ =  neighbours[idx][1];
+                var y_ =  neighbours[idx][0];
+                var x_ =  neighbours[idx][1];
                 if (is_empty(x_, y_)) {
                     set_wall(x_, y_);
-                    y_idx = y_ + intdiv(y - y_, 2);
-                    x_idx = x_ + intdiv(x - x_, 2);
+                    var y_idx = y_ + intdiv(y - y_, 2);
+                    var x_idx = x_ + intdiv(x - x_, 2);
                     set_wall(x_idx, y_idx);
                     x = x_; y = y_;
                 }

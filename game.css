@@ -2,17 +2,31 @@
 }
 
 .cell {
-    width: 10px;
-    height: 10px;
+    width: 1.5vh;
+    height: 1.5vh;
     float: left;
-    /*position: absolute;*/
 }
 
 .ghost {
+    background-color: blue;
+}
+
+.ghost_trail {
+    animation: ghost_trail_animation 0.5s linear;
+    animation-iteration-count: 1;
+}
+
+@keyframes ghost_trail_animation {
+    0% {
+        background-color: blue;
+    }
+    100% {
+        background-color: white;
+    }
 }
 
 #scores {
-    font-size: 5em;
+    font-size: 1em;
     font-family: sans-serif;;
 }
 
@@ -25,7 +39,16 @@
 }
 
 .prize {
-    background-color: lightgreen;;
+    animation: blinker 0.01s linear infinite alternate;
+}
+
+@keyframes blinker {
+  0% {
+      background-color: red;
+  }
+  100% {
+    background-color: blue;
+  }
 }
 
 .player1 {

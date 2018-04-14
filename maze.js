@@ -1,179 +1,150 @@
-var width = 10;
-var maze = null;
-var X = 5, Y = 3;
 var container = d3.select("#container")
-var audio_wall = new Audio('wall-hit2.mp3');
-var audio_yahoo = new Audio('yahoo.mp3');
-var end_pos = null;
+//var audio_wall = new Audio('wall-hit2.mp3');
+//var audio_yahoo = new Audio('yahoo.mp3');
+
+var EMPTY_SPACE = 0;
+var WALL = 1;
+var PRIZE_VALUE = 100;
+var GHOST_PENALTY = 100;
 
 var Maze = function(data) {
     this.data = data;
     this.players = [];
     this.targets = [];
     this.observers = [];
+    this.ghosts = [];
 }
 
-var EMPTY_SPACE = 0;
-var WALL = 1;
-var PRIZE_VALUE = 100;
 Maze.prototype = {
-    selectFree : function() {
-        var h = this.data.length;
-        var w = this.data[0].length;
-        while (true) {
-            // TODO Give up after a certain number of tries
-            x = Math.round(Math.random() * (w - 1))
-            y = Math.round(Math.random() * (h - 1))
-            if (this.data[y][x] == EMPTY_SPACE) {
-                return new Position(x, y)
-            }
-        }
-    },
-
-    notify_observers : function(data, event_label) {
-        for (idx in this.observers) {
-            var o = this.observers[idx];
-            o.notify(data, event_label);
-        }
-    },
-
     addPlayer : function(player) {
-        // TODO - check that player has been placed in a legal spot.
         this.players.push(player)
-        this.notify_observers(player, "player_added")
+        this.notifyObservers(player, "player_added")
     },
 
-    movePlayer : function(player, pos) {
-        in_pos = _.map(this.players, function(player_) {
-            if (player_ != player) 
-                if (pos.x == player_.pos.x && pos.y == player_.pos.y) {
-                    return true;
-                }
-                return false;
-        })
-        if (_.any(in_pos)) return false;
-        value = this.data[pos.y][pos.x]
-        if (value == WALL) {
-            return false
-        }
-        else {
-            var new_pos = pos;
-            var old_pos = player.pos;
-            player.pos = pos;
-
-            if (value instanceof Prize) {
-                this.data[pos.y][pos.x] = EMPTY_SPACE;
-                player.score += value.value
-                this.notify_observers({player:player, prize:value}, "prize_acquired")
-                var prize = this.addPrize(
-                    new Prize(this.selectFree(), PRIZE_VALUE)
-                )
-            }
-
-            this.notify_observers({player:player, old_pos:old_pos, new_pos:new_pos}, "player_moved")
-            return true;
-        }
+    addGhost : function(ghost) {
+        this.ghosts.push(ghost)
+        this.notifyObservers(ghost, "ghost_added")
     },
 
     addPrize : function(prize) {
-        if (this.data[prize.pos.y][prize.pos.x] == EMPTY_SPACE) {
+        if (this.isEmpty(prize.pos)) {
             this.targets.push(prize)
             this.data[prize.pos.y][prize.pos.x] = prize;
-            this.notify_observers(prize, "prize_added")
+            this.notifyObservers(prize, "prize_added")
             return true;
         }
 
         return false;
     },
 
+    selectFree : function() {
+        var h = this.data.length;
+        var w = this.data[0].length;
+        while (true) {
+            // TODO Give up after a certain number of tries
+            x = _.random(0, w - 1);
+            y = _.random(0, h - 1);
+            pos = new Position(x, y);
+
+            if (this.isEmpty(pos)) {
+                return pos
+            }
+        }
+    },
+
+    isWall : function(pos) {
+        return this.data[pos.y][pos.x] == WALL
+    },
+
+    isEmpty : function(pos) {
+        return this.data[pos.y][pos.x] == EMPTY_SPACE
+    },
+
+    isFree : function(pos, objects) {
+        if (objects == null)
+            objects = this.players.concat(this.ghosts);
+
+        var has_object = _.map(objects, function(object) {
+            return pos.isSame(object.pos)
+        })
+        if (_.any(has_object)) return false;
+
+        var value = this.data[pos.y][pos.x]
+        if (value == WALL) {
+            return false
+        }
+
+        return true;
+    },
+
+    updateScore : function(player, score) {
+        player.score += score;
+        this.notifyObservers(player, "player_scored");
+    },
+
+    moveObject : function(object, pos) {
+        var value = this.data[pos.y][pos.x]
+        var new_pos = pos;
+        var old_pos = object.pos;
+        object.pos = pos;
+    },
+
+    moveGhost : function(ghost, new_pos) {
+        var old_pos = ghost.pos;
+        var self = this;
+        this.moveObject(ghost, new_pos);
+        if (!this.isFree(new_pos, this.players)) {
+            _.each(this.players, function(player) {
+                if (new_pos.isSame(player.pos)) {
+                    console.log(this);
+                    self.notifyObservers({ghost:ghost, player:player, pos:new_pos}, "player_gobbled")
+                    self.updateScore(player, -ghost.penalty);
+                }
+            })
+        } 
+        this.notifyObservers({ghost:ghost, old_pos:old_pos, new_pos:new_pos}, "ghost_moved")
+    },
+
+    movePlayer : function(player, new_pos) {
+        var self = this;
+        if (!this.isFree(new_pos, this.ghosts)) {
+            _.each(this.ghosts, function(ghost) {
+                if (new_pos.isSame(ghost.pos)) {
+                    self.notifyObservers({ghost:ghost, player:player, pos:new_pos}, "player_gobbled")
+                    self.updateScore(player, -ghost.penalty);
+                    return;
+                }
+            })
+        }
+
+        if (this.isFree(new_pos)) {
+            var old_pos = player.pos;
+            player.pos = new_pos;
+
+            var value = this.data[new_pos.y][new_pos.x]
+
+            if (value instanceof Prize) {
+                this.data[new_pos.y][new_pos.x] = EMPTY_SPACE;
+                this.notifyObservers({player:player, prize:value}, "prize_acquired")
+                this.updateScore(player, value.value);
+                this.addPrize( new Prize(this.selectFree(), PRIZE_VALUE));
+            }
+
+            this.notifyObservers({player:player, old_pos:old_pos, new_pos:new_pos}, "player_moved")
+            return true;
+        }
+    },
+
+    notifyObservers : function(data, event_label) {
+        _.each(this.observers, function(o) {
+            o.notify(data, event_label);
+        })
+    },
+
+
+
     addEventObserver : function(observer) {
         this.observers.push(observer);
-    }
-}
-
-var MazeRenderer = function(container, maze) {
-    this.container = container;
-    this.maze = maze;
-    maze.addEventObserver(this);
-    this.drawMaze();
-}
-
-MazeRenderer.prototype = {
-    drawMaze : function() {
-        rows = this.container
-            .selectAll("div")
-            .data(this.maze.data)
-            .enter()
-            .append("div")
-                .classed("row", true)
-                .each(function(row_data, idx) {
-                    d3.select(this)
-                        .selectAll("div")
-                        .data(row_data)
-                        .enter()
-                        .append("div")
-                            .classed("cell", true)
-                            .attr("data-x", function(el, idx2) {
-                                return idx2;
-                            })
-                            .attr("data-y", idx)
-                            .style("margin-top", function(el, idx2) {
-                                return 0;;
-
-                            })
-                            .style("margin-left", function(el, idx2) {
-                                return 0;;
-                            })
-                            .classed("wall", function(el) {
-                                if (el == WALL)
-                                    return true;
-                                return false;
-                            })
-                            .classed("prize", function(el) {
-                                if (el instanceof Prize)
-                                    return true;
-                                return false;
-                            })
-                })
-    },
-
-    notify : function(data, event_type) {
-        if (event_type == "player_added")
-            this.on_add_player(data);
-        else if (event_type == "prize_added")
-            this.on_prize_added(data);
-        else if (event_type == "player_moved")
-            this.on_move_player(data.player, data.old_pos, data.new_pos);
-        else if (event_type == "prize_acquired")
-            this.on_prize_acquired(data.player, data.prize);
-    },
-
-    on_add_player : function(player) {
-        console.log("Player added: " + player.pos)
-        this.color_xy(player.pos, player.css_class);
-    },
-
-    on_move_player : function(player, old_pos, new_pos) {
-        this.color_xy(old_pos, player.css_class, false);
-        this.color_xy(new_pos, player.css_class, true);
-    },
-
-    on_prize_added : function(prize) {
-        this.color_xy(prize.pos, "prize");
-    },
-
-    on_prize_acquired : function(player, prize) {
-        this.color_xy(prize.pos, "prize", false);
-        d3.select("#scores #" + player.name + "_score .value").text(player.score);
-    },
-
-    color_xy : function(pos, class_, is_add) {
-        if (is_add == null)
-            is_add = true;
-        attributes = "[data-x='" + pos.x + "'][data-y='" + pos.y + "']"
-        var el = d3
-            .selectAll(attributes)
-        el.classed(class_, is_add)
     }
 }
 
@@ -187,80 +158,18 @@ var Player = function(pos) {
 
 Player.count = 0;
 
-var GameObject = function(pos) {
-    this.pos = pos;
-}
-
 var Prize = function(pos, value) {
     this.pos = pos;
     this.value = value;
 }
 
-var Position = function(x, y) {
-    this.x = x;
-    this.y = y;
-}
 
-Position.prototype = {
-    up : function() {
-        return new Position(this.x, this.y - 1);
-    },
-
-    down : function() {
-        return new Position(this.x, this.y + 1);
-    },
-
-    left : function() {
-        return new Position(this.x - 1, this.y);
-    },
-
-    right : function() {
-        return new Position(this.x + 1, this.y);
-    }
-}
-
-var Controller = function(maze) {
-    var self = this;
-    this.input = Input(document.getElementsByTagName("body")[0])
-    this.maze = maze;
-    this.maze.addEventObserver(this);
-
-    var move = function(player, direction) {
-        switch (direction) {
-            case "left"  : this.maze.movePlayer(player, player.pos.left()); break;
-            case "right" : this.maze.movePlayer(player, player.pos.right()); break;
-            case "up"    : this.maze.movePlayer(player, player.pos.up()); break;
-            case "down"  : this.maze.movePlayer(player, player.pos.down()); break;
-        }
-    }
-    this.input
-        .watch("arrowup",    function() { move(self.player1, "up") }, "ArrowUp")
-        .watch("arrowdown",  function() { move(self.player1, "down") }, "ArrowDown")
-        .watch("arrowleft",  function() { move(self.player1, "left") }, "ArrowLeft")
-        .watch("arrowright", function() { move(self.player1, "right") }, "ArrowRight")
-        .watch("w",          function() { move(self.player2, "up") }, "w")
-        .watch("s",          function() { move(self.player2, "down") }, "s")
-        .watch("a",          function() { move(self.player2, "left") }, "a")
-        .watch("d",          function() { move(self.player2, "right") }, "d")
-}
-
-Controller.prototype = {
-    notify : function(data, event_label) {
-        console.log(event_label)
-        if (event_label == "player_added") {
-            this.player1 = this.maze.players[0]
-
-            if (this.maze.players.length > 1)
-                this.player2 = this.maze.players[1]
-        }
-    }
-}
-
-d3.json("maze2.json").then(function(data) {
-    maze = new Maze(generate_maze());
-    //maze = new Maze(data);
-    renderer = new MazeRenderer(d3.select("#container"), maze);
-    controller = new Controller(maze);
+var init_maze = function() {
+    console.log("Init maze");
+    d3.select("#container #maze").remove();
+    var maze = new Maze(generate_maze(width, height, complexity, density));
+    var renderer = new MazeRenderer(container, maze);
+    var controller = new Controller(maze);
 
     maze.addPlayer(
         new Player(maze.selectFree())
@@ -273,43 +182,13 @@ d3.json("maze2.json").then(function(data) {
     var prize = new Prize(maze.selectFree(), PRIZE_VALUE);
     maze.addPrize(prize);
 
-})
-
-/*
-var color_xy = function(class_, x, y) {
-    container.selectAll(".row").each(function(el, idx) {
-        if (idx == y) {
-            d3.select(this).selectAll(".cell")
-                .classed(class_, function(el, idx2) {
-                    if (idx2 == x) {
-                        return true;
-                    }
-                    return false;
-                })
-        }
-    })
-}
-*/
-
-/*
-var move_xy = function(x, y) {
-    if (maze.data[y][x] == 0) {
-        if (x == end_pos[0] && y == end_pos[1]) {
-            audio_yahoo.play();
-            audio_yahoo.currentTime = 0;
-            color_xy("blank", end_pos[0], end_pos[1])
-            end_pos = maze.selectFree();
-            color_xy("end", end_pos.x, end_pos.y)
-
-        }
-        d3.selectAll(".cell").classed("position", false);
-        X = x;
-        Y = y;
-        color_xy("position", X, Y)
-    } else {
-        audio_wall.play();
-        audio_wall.currentTime = 0;
-    }
+    maze.addGhost(new Ghost(maze, maze.selectFree()))
+    maze.addGhost(new Ghost(maze, maze.selectFree()))
+    maze.addGhost(new Ghost(maze, maze.selectFree()))
+    maze.addGhost(new Ghost(maze, maze.selectFree()))
 }
 
-*/
+var width = 81, height = 51, complexity = 0.05, density = 0.05;
+onload = function() {
+    init_maze();
+}
