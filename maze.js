@@ -44,6 +44,14 @@ Maze.prototype = {
     },
 
     movePlayer : function(player, pos) {
+        in_pos = _.map(this.players, function(player_) {
+            if (player_ != player) 
+                if (pos.x == player_.pos.x && pos.y == player_.pos.y) {
+                    return true;
+                }
+                return false;
+        })
+        if (_.any(in_pos)) return false;
         value = this.data[pos.y][pos.x]
         if (value == WALL) {
             return false
@@ -249,7 +257,8 @@ Controller.prototype = {
 }
 
 d3.json("maze2.json").then(function(data) {
-    maze = new Maze(data);
+    maze = new Maze(generate_maze());
+    //maze = new Maze(data);
     renderer = new MazeRenderer(d3.select("#container"), maze);
     controller = new Controller(maze);
 
