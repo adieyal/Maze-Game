@@ -8,20 +8,23 @@
 }
 
 .ghost {
-    background-color: blue;
+    background-image: url('img/ghost.svg');
 }
 
 .ghost_trail {
-    animation: ghost_trail_animation 0.5s linear;
+    /*animation: ghost_trail_animation 0.5s linear;
     animation-iteration-count: 1;
+    background-image: url('img/ghost.svg');
+    */
 }
 
 @keyframes ghost_trail_animation {
     0% {
-        background-color: blue;
+        opacity: 1;
     }
     100% {
-        background-color: white;
+        opacity: 0;
+        display: none;
     }
 }
 
@@ -51,12 +54,23 @@
   }
 }
 
+.apple {
+    background-image: url('img/apple.svg');
+}
+
+.banana {
+    background-image: url('img/banana.svg');
+}
+
+.strawberry {
+    background-image: url('img/strawberry.svg');
+}
 .player1 {
-    background-color: red !important;
+    background-image: url('img/glasses.svg');
 }
 
 .player2 {
-    background-color: green !important;
+    background-image: url('img/smart.svg');
 }
 
 .start {

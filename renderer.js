@@ -83,11 +83,23 @@ MazeRenderer.prototype = {
     },
 
     on_prize_added : function(prize) {
-        this.color_xy(prize.pos, "prize");
+        this.color_xy(prize.pos, prize.class_);
+        /*
+        d3.select(".floating_prize")
+            .style("left", pos.x * 12 + 6)
+            .style("top", pos.y * 12 + 6)
+            .style("width",  "20px")
+            .style("height", "px")
+            .classed(prize.class_, true)
+        */
     },
 
     on_prize_acquired : function(player, prize) {
-        this.color_xy(prize.pos, "prize", false);
+        this.color_xy(prize.pos, prize.class_, false);
+        /*
+        d3.select(".floating_prize")
+            .classed(prize.class_, false)
+            */
     },
 
     on_player_scored : function(player) {

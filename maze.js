@@ -163,7 +163,15 @@ Player.count = 0;
 
 var Prize = function(pos, value) {
     this.pos = pos;
-    this.value = value;
+    var prizes = [
+        { "class" : "apple", "points" : 25},
+        { "class" : "banana", "points" : 50},
+        { "class" : "strawberry", "points" : 100}
+    ]
+
+    var prize_idx = _.random(0, prizes.length - 1);
+    this.class_ = prizes[prize_idx]["class"];
+    this.value = prizes[prize_idx]["points"];
 }
 
 
@@ -191,7 +199,7 @@ var init_maze = function() {
     maze.addGhost(new Ghost(maze, maze.selectFree()))
 }
 
-var width = 81, height = 51, complexity = 0.75, density = 0.75;
+var width = 81, height = 51, complexity = 0.75, density = 0.05;
 var maze = null;
 onload = function() {
     init_maze();
