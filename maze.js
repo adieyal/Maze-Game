@@ -186,7 +186,7 @@ var init_maze = function() {
     maze.addGhost(new Ghost(maze, maze.selectFree()))
 }
 
-var width = 81, height = 51, complexity = 0.05, density = 0.05;
+var width = 81, height = 51, complexity = 0.75, density = 0.75;
 onload = function() {
     init_maze();
 }
