@@ -3,7 +3,7 @@ var Controller = function(maze) {
     this.input = new Input(document.getElementsByTagName("body")[0])
     this.maze = maze;
     this.maze.addEventObserver(this);
-    this.speed = 1000 / 15;
+    this.speed = 1000 / 5;
 
     var moveGhosts = function() {
         for (idx in maze.ghosts) {

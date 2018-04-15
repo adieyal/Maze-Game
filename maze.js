@@ -2,13 +2,12 @@ var container = d3.select("#container")
 //var audio_wall = new Audio('wall-hit2.mp3');
 //var audio_yahoo = new Audio('yahoo.mp3');
 
-var EMPTY_SPACE = 0;
-var WALL = 1;
 var PRIZE_VALUE = 100;
 var GHOST_PENALTY = 100;
 
 var Maze = function(data) {
     this.data = data;
+    this.aStarGraph = this.genAStarGraph(data);
     this.players = [];
     this.targets = [];
     this.observers = [];
@@ -16,6 +15,13 @@ var Maze = function(data) {
 }
 
 Maze.prototype = {
+    genAStarGraph : function(data) {
+        var astar_data = _.map(data, function(row) {
+            return _.map(row, function(el) { return 1 - el;})
+        })
+        return new Graph(astar_data);
+    },
+
     addPlayer : function(player) {
         this.players.push(player)
         this.notifyObservers(player, "player_added")
@@ -96,7 +102,6 @@ Maze.prototype = {
         if (!this.isFree(new_pos, this.players)) {
             _.each(this.players, function(player) {
                 if (new_pos.isSame(player.pos)) {
-                    console.log(this);
                     self.notifyObservers({ghost:ghost, player:player, pos:new_pos}, "player_gobbled")
                     self.updateScore(player, -ghost.penalty);
                 }
@@ -165,7 +170,7 @@ var Prize = function(pos, value) {
 var init_maze = function() {
     console.log("Init maze");
     d3.select("#container #maze").remove();
-    var maze = new Maze(generate_maze(width, height, complexity, density));
+    maze = new Maze(generate_maze(width, height, complexity, density));
     var renderer = new MazeRenderer(container, maze);
     var controller = new Controller(maze);
 
@@ -187,6 +192,7 @@ var init_maze = function() {
 }
 
 var width = 81, height = 51, complexity = 0.75, density = 0.75;
+var maze = null;
 onload = function() {
     init_maze();
 }

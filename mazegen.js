@@ -1,43 +1,6 @@
-/*
-var MazeBuilder = function() {
-}
-
-MazeBuilder.WALL = 1;
-MazeBuilder.EMPTY = 0;
-
-MazeBuilder.prototype = {
-    build_maze : function(width, height, complexity, density) {
-        this.Z = this.create_empty_maze(width, height);
-        width = width || 81;
-        height = height || 51;
-        complexity = complexity || 0.75;
-        density = density || 0.75;
-    },
-
-    create_empty_maze = function(width, height) {
-        Z = math.zeros(height, width)
-
-        top_border = Z.subset(math.index(0, math.range(0, width))).map(wall)
-        Z.subset(math.index(0, math.range(0, width)), top_border)
-
-        bottom_border = Z.subset(math.index(height - 1, math.range(0, width))).map(wall)
-        Z.subset(math.index(height - 1, math.range(0, width)), bottom_border)
-
-        left_border = Z.subset(math.index(math.range(0, height), 0)).map(wall)
-        Z.subset(math.index(math.range(0, height), 0), left_border)
-
-        right_border = Z.subset(math.index(math.range(0, height), width - 1)).map(wall)
-        Z.subset(math.index(math.range(0, height), width - 1), right_border)
-
-        return Z;
-    }
-
-}
-*/
-
+var WALL = 1;
+var EMPTY_SPACE = 0;
 var generate_maze = function(width, height, complexity, density) {
-    var WALL = 1;
-    var EMPTY = 0;
 
     var create_empty_maze = function(width, height) {
         var Z = math.zeros(height, width)
