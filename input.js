@@ -5,6 +5,7 @@ function Input(el){
 
     function ev_kdown(ev)
     {
+        console.log(ev.key);
         map[ev.key] = true;
         //ev.preventDefault();
         return;

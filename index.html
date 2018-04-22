@@ -1,7 +1,9 @@
 <html>
     <head>
         <link rel="stylesheet" href="game.css"/>
+    </head>
     <body>
+        <div id="gestureShownHere" style="margin-left:50%"></div>
         <div id="container">
             <div class="floating_prize strawberry"></div>
         </div>
@@ -9,6 +11,7 @@
             <div id="player1_score">Player 1: <span class="value">0</span></div>
             <div id="player2_score">Player 2: <span class="value">0</span></div>
         </div>
+<!--
         <p><strong>Instructions:</strong><br/>
 
         <p>
@@ -17,6 +20,7 @@
 
         Race to reach the prize (the light-green square)
         </p>
+        -->
         <script src="astar.js"></script>
         <script src="d3.v5.min.js"></script>
         <script src="underscore-min.js"></script>
@@ -28,6 +32,12 @@
         <script src="position.js"></script>
         <script src="controller.js"></script>
         <script src="ghost.js"></script>
+
+        <script type="text/javascript" src="jshg/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="jshg/compatibility.js"></script>
+        <script type="text/javascript" src="jshg/jshg.js"></script>
+        <!--
         <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+        -->
     </body>
 </html>

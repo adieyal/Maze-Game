@@ -165,8 +165,9 @@ var Prize = function(pos, value) {
     this.pos = pos;
     var prizes = [
         { "class" : "apple", "points" : 25},
-        { "class" : "banana", "points" : 50},
-        { "class" : "strawberry", "points" : 100}
+        { "class" : "orange", "points" : 50},
+        { "class" : "strawberry", "points" : 100},
+        { "class" : "plum", "points" : 150}
     ]
 
     var prize_idx = _.random(0, prizes.length - 1);
@@ -193,13 +194,15 @@ var init_maze = function() {
     var prize = new Prize(maze.selectFree(), PRIZE_VALUE);
     maze.addPrize(prize);
 
+/*
     maze.addGhost(new Ghost(maze, maze.selectFree()))
     maze.addGhost(new Ghost(maze, maze.selectFree()))
     maze.addGhost(new Ghost(maze, maze.selectFree()))
     maze.addGhost(new Ghost(maze, maze.selectFree()))
+    */
 }
 
-var width = 81, height = 51, complexity = 0.75, density = 0.05;
+var width = 105, height = 51, complexity = 0.05, density = 0.05;
 var maze = null;
 onload = function() {
     init_maze();
