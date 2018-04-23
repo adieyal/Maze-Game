@@ -49,7 +49,7 @@ SpeechRenderer.prototype = {
     },
 
     on_prize : function(prize) {
-        this.speak("A " + prize.class_ + " placed in the maze");
+        this.speak("A " + prize.class_ + " was placed in the maze");
     },
 
     speak : function(text) {
