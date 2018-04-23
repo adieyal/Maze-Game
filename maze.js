@@ -166,7 +166,9 @@ var Prize = function(pos, value) {
     var prizes = [
         { "class" : "apple", "points" : 25},
         { "class" : "banana", "points" : 50},
-        { "class" : "strawberry", "points" : 100}
+        { "class" : "strawberry", "points" : 100},
+        { "class" : "orange", "points" : 75},
+        { "class" : "cherry", "points" : 125}
     ]
 
     var prize_idx = _.random(0, prizes.length - 1);
