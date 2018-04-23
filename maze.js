@@ -151,13 +151,7 @@ Maze.prototype = {
     },
 
     removeEventObserver : function(observer) {
-        for (var i in this.observers) {
-            var o = this.observers[i];
-            if (o == observer) {
-                this.observers.splice(i, 1);
-                break;
-            }
-        }
+        this.observers = _.without(this.observers, observer);
     }
 }
 
