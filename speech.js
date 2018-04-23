@@ -1,6 +1,5 @@
 var SpeechRenderer = function(maze) {
     this.maze = maze;
-    maze.addEventObserver(this);
 
     this.synth = window.speechSynthesis;
     var v = this.synth.getVoices()[7]
@@ -23,7 +22,6 @@ SpeechRenderer.prototype = {
             ["Yum yum. " + player.name + " is dead"],
             ["Looks like " + player.name + " just met his maker"],
             ["Play the violin for " + player.name],
-            ["Dead. dead. dead. " + player.name + " is dead"],
             [player.name + ", the moment you set foot in the maze you were doomed"],
             [player.name + ", you just died - go cry in a pillow"],
             [player.name + " just kicked the bucket."],
@@ -40,7 +38,7 @@ SpeechRenderer.prototype = {
             [player.name + " perhaps you should take up stamp collecting"],
             [player.name + " go play with your dolls."],
         ]
-        num = Math.round(Math.random() * (messages.length - 1));
+        num = _.random(messages.length - 1);
         this.speak(messages[num])
     },
 
