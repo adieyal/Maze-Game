@@ -148,6 +148,16 @@ Maze.prototype = {
 
     addEventObserver : function(observer) {
         this.observers.push(observer);
+    },
+
+    removeEventObserver : function(observer) {
+        for (var i in this.observers) {
+            var o = this.observers[i];
+            if (o == observer) {
+                this.observers.splice(i, 1);
+                break;
+            }
+        }
     }
 }
 
@@ -184,6 +194,7 @@ var init_maze = function() {
     var renderer = new MazeRenderer(container, maze);
     var controller = new Controller(maze);
     var speech = new SpeechRenderer(maze);
+    controller.addSpeech(speech);
 
     maze.addPlayer(
         new Player(maze.selectFree())
