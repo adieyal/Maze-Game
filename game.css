@@ -8,23 +8,23 @@
 }
 
 .ghost {
-    background-image: url('img/ghost.svg');
+    /*background-image: url('img/ghost.svg');*/
+    background-color: turquoise;
 }
 
 .ghost_trail {
-    /*animation: ghost_trail_animation 0.5s linear;
-    animation-iteration-count: 1;
-    background-image: url('img/ghost.svg');
-    */
+    animation: ghost_trail_animation 0.8s linear;
+    /*background-image: url('img/ghost.svg');*/
 }
 
 @keyframes ghost_trail_animation {
     0% {
         opacity: 1;
+        background-color:turquoise;
     }
     100% {
         opacity: 0;
-        display: none;
+        background-color:turquoise;
     }
 }
 
@@ -38,7 +38,7 @@
 }
 
 .wall {
-    background-color: black;
+    background-color: grey;
 }
 
 .prize {
@@ -58,19 +58,25 @@
     background-image: url('img/apple.svg');
 }
 
-.banana {
-    background-image: url('img/banana.svg');
+.orange {
+    background-image: url('img/orange.svg');
+}
+
+.plum {
+    background-image: url('img/plum.svg');
 }
 
 .strawberry {
     background-image: url('img/strawberry.svg');
 }
 .player1 {
-    background-image: url('img/glasses.svg');
+    /*background-image: url('img/glasses.svg');*/
+    background-color: green;
 }
 
 .player2 {
-    background-image: url('img/smart.svg');
+    /*background-image: url('img/smart.svg');*/
+    background-color: blue;
 }
 
 .start {
