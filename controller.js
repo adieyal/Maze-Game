@@ -4,6 +4,11 @@ var Controller = function(maze) {
     this.maze = maze;
     this.maze.addEventObserver(this);
     this.speed = 1000 / 5;
+    this.enable_sound = d3.select("#enable_sound")
+
+    this.enable_sound.on("click", function() {
+        self.disableSpeech(!this.checked);
+    });
 
     var moveGhosts = function() {
         for (idx in maze.ghosts) {
@@ -43,6 +48,18 @@ Controller.prototype = {
         else if (event_label == "player_gobbled") {
             var new_pos = this.maze.selectFree();
             this.maze.movePlayer(data.player, new_pos);
+        }
+    },
+
+    addSpeech : function(speech) {
+        this.speech = speech;
+        this.maze.addEventObserver(speech);
+    },
+
+    disableSpeech : function(disable) {
+        this.maze.removeEventObserver(this.speech);
+        if (!disable) {
+            this.maze.addEventObserver(this.speech);
         }
     }
 }
