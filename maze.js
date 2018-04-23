@@ -181,6 +181,7 @@ var init_maze = function() {
     maze = new Maze(generate_maze(width, height, complexity, density));
     var renderer = new MazeRenderer(container, maze);
     var controller = new Controller(maze);
+    var speech = new SpeechRenderer(maze);
 
     maze.addPlayer(
         new Player(maze.selectFree())
